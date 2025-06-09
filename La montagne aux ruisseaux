@@ -1,0 +1,696 @@
+\documentclass[12pt,a4paper]{article} 
+%---------------------------------------Chargement des modules-------------------------------------
+\usepackage[left=2cm,right=2cm,top=2cm,bottom=2cm]{geometry} %mise en page marge
+\setlength{\parindent}{0 mm} % Pas de retrait de paragraphe
+\usepackage[utf8]{inputenc} %Taper des accents dans le fichier source
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel} %Typo française  
+\usepackage{amsmath,amssymb,amsfonts,mathrsfs,}%packages pour les maths 
+\usepackage{amsthm} % Pour écrire des preuves
+\usepackage{esvect} % Pour faire de jolis vecteurs
+\usepackage{mathabx} % Pour utiliser la notation double crochets pour les intervalles d'entiers.
+\usepackage{lmodern} % Police pour les maths
+\usepackage[np]{numprint} %Séparateur de milliers
+\usepackage{pstricks,pstricks-add,pst-func,pst-eucl} % Package Graphique Pstricks
+\usepackage{tikz,tkz-base,tkz-euclide} % packages graphique TikZ
+\usetikzlibrary{automata,patterns,shapes} % librairies TikZ
+\usepackage{graphicx} %package pour insérer des images 
+\usepackage{fancyhdr} \pagestyle{fancy} %personnalisation en-tête et pied de page
+    \setlength{\headheight}{15 pt}
+\usepackage{fancybox}
+\usepackage{xcolor} % Pour insérer des couleurs utile pour les importations d'images géogebra
+\usepackage{graphicx} % pour insérer images
+\usepackage[colorlinks,allcolors=blue]{hyperref} %lien hypertexte
+\usepackage{enumitem} % Changer le styla des énumérations
+\usepackage{listings} %Pour écrire du code
+
+%Définitions d'environnements
+\newtheorem{Lem}{Lemme}
+\newtheorem{Prop}{Propriété}[section]
+\newtheorem{Thm}{Théorème}
+\newtheorem{Cor}{Corollaire}
+
+%introduisez ici vos macro cela permettra de gagner du temps
+\newcommand{\R}{\mathbb{R}}% Ensemble des Réels
+\newcommand{\N}{\mathbb{N}} % Ensemble des Naturels
+
+\author{Jérémy} % Auteur du document
+
+\lhead[]{\small $\mathbb{TFJM}^2$ }  %En tête et pied de page
+\chead[]{Sujet 2}
+\rhead[]{\small {2023}}
+\cfoot[]{\small {Équipe Maths à l'eau : Jérémy Ripert}}
+\rfoot{\small \thepage }
+\renewcommand{\thesubsection}{\arabic{section}-\alph{subsection}}
+%--------------------------- Début du document ---------------------------------------------------
+\begin{document}
+\begin{center}
+    \begin{Huge}
+    La montagne aux ruisseaux
+    \end{Huge}
+\end{center}
+\begin{abstract}
+Dans ce problème où un plan aérien contient $v$ villages dont certains sont reliés par au maximum un ruisseau, l'objectif est d'associer des altitudes,entières, en kilomètres, toutes différentes, entre 1 et $v$ afin que les ruisseaux s'écoulent correctement du haut vers le bas\\
+Dans une première partie nous avons recherché le nombre total d'orientations possibles.\\
+Dans une deuxième partie, que nous avons traité entièrement, nous avons recherché les plans pour lesquels  $n_0(P)$ (nombre d'orientations des ruisseaux pour lesquels on a aucune façon de choisir des altitudes) correspond à certaines valeurs.\\
+Nous avons ensuite généralisé dans une troisième partie la recherche des $n_0(P)$.\\
+Dans la quatrième partie (traitée entièrement sur le premier exemple et partiellement sur le deuxième exemple en trouvant un minorant) puis dans la cinquième partie nous avons étudié le cas de $n_1(P)$ (nombre d'orientations des ruisseaux pour lesquels on a aune seule façon de choisir des altitudes)\\
+Dans la partie 6, nous avons traité de façon plus générale, le cas $n_k(P)$ pour un plan complet et un plan étoilé, puis seulement conjecturé  des résultats pour le plan ligne.
+Nous avons enfin légèrement aborder, sans donner de résultats précis la partie 7 qui étudie le cas général pour tout plan.
+
+\end{abstract}
+
+\tableofcontents
+
+\pagebreak
+\section{Nombre d'orientations}
+Le nombre maximum d'arêtes dans un graphe à $n$ sommets est la somme des arêtes que l'on peut faire entre tous les sommets du graphe donc le nombre d'arêtes que possède le graphe complet à $v$ sommets. 
+Pour connaître le nombre d'arêtes on doit donc ajouter toutes les arêtes entre un point et les autres. Puis on ajoute les arêtes entre les autres points et ceux avec qui ils ne sont pas reliés.\\
+
+\begin{center}
+    \begin{tikzpicture}
+        \tikzstyle{node}=[circle, draw, fill=white]
+        \node[node] (a) at (0,0) {};
+        \node[node] (b) at (0,2) {};
+        \node[node] (c) at (2,0) {};
+        \node[node] (d) at (2,2) {};
+        \draw (a)--(b); \draw (a)--(c); \draw (a)--(d);
+        \draw [green] (b)--(c) ; \draw[green] (b)--(d) ;
+        \draw[red] (c)--(d) ;
+    \end{tikzpicture}
+\end{center}
+
+On fait donc $1+2+3=6$ pour un graphe avec 4 sommets.
+Étant donné $v$ le nombre de villages, le nombre maximal de ruisseaux est $\frac{v(v-1)}{2}$ donc le nombre de ruisseaux $r$ est donc dans l'intervalle $\ldbrack 0;\frac{v(v-1)}{2} \rdbrack$.\\
+Pour chaque ruisseau deux orientations sont possibles, le nombre de possibilités est donc multiplié par 2 pour chaque nouveau ruisseau.\\
+Dans un graphe avec 1 ruisseau, on  a deux possibilités d'orientation du ruisseau. Pour un graphe avec 2 ruisseaux, on aura $4 = 2 \times 2$ possibilités d'orientations.
+
+\begin{center}
+    Pour $r$ ruisseaux on aura donc $2^r$ possibilités pour $r \in \ldbrack 0;\dfrac{v(v-1)}{2} \rdbrack$.\\
+\end{center}
+
+\section{$n_0(P)=n$}
+Le nombre d'orientations telles qu'on ne peut pas attribuer d'altitudes aux villages.\\
+
+\subsection{$n=0$}
+$n_0(P)=0$ signifie qu'il existe aucune orientation telle qu'on ne peut pas attribuer aux villages une altitude, c'est à dire que l'on peut toujours attribuer une altitude.\\
+
+\begin{center}
+    \begin{tikzpicture}
+        \tikzstyle{node}=[circle, draw, fill=white]
+        \node[node] (a) at (0,2) {3} ;
+        \node[node] (b) at (0,0) {2} ;
+        \node[node] (c) at (2,0) {1} ;
+        \node[node] (d) at (-2,0) {4} ;
+        \node[node] (e) at (0,-2) {5} ;
+        \draw[->] (a)--(b) ;\draw[->] (b)--(c) ;\draw[->] (d)--(b) ;\draw[->] (e)--(b); 
+    \end{tikzpicture}
+\end{center}
+
+Dans le cas d'un graphe étoilé, on peut toujours attribuer une altitude peu importe l'orientation du graphe.\\
+
+\begin{center}
+    \begin{tikzpicture}
+        \tikzstyle{node}=[circle, draw, fill=white]
+        \node[node] (a) at (1,2) {} ;
+        \node[node] (b) at (0,0) {} ;
+        \node[node] (c) at (2,0) {} ;
+        \draw[->] (a)--(b) ;\draw[->] (b)--(c) ;\draw[->] (c)--(a);
+        \node[node] (e) at (8,2) {} ;
+        \node[node] (f) at (7,0) {} ;
+        \node[node] (g) at (9,0) {} ;
+        \node[node] (d) at (10,0) {} ;
+        \draw[->] (e)--(f) ;\draw[->] (f)--(g) ;\draw[->] (g)--(e) ;\draw[->] (d)--(g);
+    \end{tikzpicture}
+\end{center}
+
+Dans le cas d'un cycle où les flèches sont toutes orientées dans le même sens, alors l'attribution d'altitude est impossible car un village ne peut pas être supérieur à lui même. Si l'on ajoute des villages en dehors du cycle le problème reste le même car on peut former le cycle.
+
+Dans un graphe sans cycle, l'attribution d'altitudes dépend uniquement des ruisseaux et de leur orientations. Donc on peut créer des sous-graphes dans lesquelles on attribue une hauteur à chaque village et grâce aux ruisseaux reliants ces sous-graphes on peut attribuer les altitudes en augmentant la hauteur du sous graphe le plus haut.\\
+On peut assimiler cette situation à une fonction récursive où l'on va découper le graphe jusqu'à obtenir un seul village et ensuite comparer les ruisseaux et modifier la hauteur de chaque ville.
+
+\begin{center}
+    On peut donc en conclure, que tous les graphes sans cycle vérifient $n_0(P)=0$.\\
+\end{center}
+
+\subsection{$n$ impaire}
+\begin{Thm}
+    $n_0(P) \in {\{2k, k\in\N\}}$, l'ensemble des nombres pairs.\\
+\end{Thm}
+
+\textbf{Démontrons ce théorème par l'absurde.}\\
+Considérons qu'une seule orientation de ruisseau empêche de placer les altitudes dans un graphe. Ce graphe doit posséder un cycle car sinon $n_0(P)=0$ d'après la section précédente. Prenons un graphe cyclique à $v$ villages.\\
+
+\begin{center}
+    \begin{tikzpicture}
+        \tikzstyle{node}=[circle, draw, fill=white]
+        \tikzstyle{black}=[circle, draw, fill=black]
+        \node[node] (a) at (1,1) {} ;
+        \node[node] (b) at (0,0) {} ;
+        \node[node] (c) at (2,0) {} ;
+        \node[black] (d) at (-0.5,-1) {} ;
+        \node[black] (e) at (2.5,-1) {} ;
+        \draw[->] (a)--(b) ;\draw[->] (c)--(a);
+        \draw[->] (b)--(d) ;\draw[->] (e)--(c);
+        \draw[->] (d)--(e) ;
+    
+        \node[node] (a) at (8,1) {} ;
+        \node[node] (b) at (7,0) {} ;
+        \node[node] (c) at (9,0) {} ;
+        \node[black] (d) at (6.5,-1) {} ;
+        \node[black] (e) at (9.5,-1) {} ;
+        \draw[<-] (a)--(b) ;\draw[<-] (c)--(a);
+        \draw[<-] (b)--(d) ;\draw[<-] (e)--(c);
+        \draw[<-] (d)--(e) ;
+    \end{tikzpicture}
+\end{center}
+
+Les sommets noirs sur le graphe représentent une partie d'un graphe cyclique contenant $v$ villages qui a été coupé. Si l'on regarde cette orientation un seul cas est possible mais en inversant le sens de toutes les flèches, on obtient un deuxième graphe pour lequel on ne peut pas attribuer de hauteur.\\
+Si l'on regarde un nombre pair quelconque, on pourra toujours inverser les flèches d'une configuration ce qui nous ramènera à un nombre pair de possibilités.\\
+
+Plus généralement peu importe comment sont positionnés les ruisseaux, si le plan contient un graphe cyclique alors on aura toujours une seconde orientations lorsque l'on inverse le sens de ce graphe.
+
+On a donc de façon plus générale la propriété suivante:\\
+La valeur $k$ de $n_k(P)$ ne change pas si on inverse l'orientation de tous les ruisseaux.\\
+
+\begin{center}
+    L'attribution d'altitudes se fait donc par nombre pair il est impossible d'avoir un nombre impair de cas. $n \in \{2k, k \in \N^*\}$,l'ensemble de pairs.
+\end{center}
+
+\subsection{$n_0(P) = 2$ et $n_0(P) = 4$}
+Comme on le voit dans la section précédente, lorsque l'on a un cycle au minimum 2 orientations sont possibles tel que l'on ne peut pas attribuer d'altitude.
+
+\begin{center}
+    Donc $n_0(P) = 2$ pour les graphes cycliques seulement.\\
+\end{center}
+
+Si l'on ajoute un ruisseau entre un village d'un cycle et un autre village, alors l'on a 2 fois plus de possibilités car chaque ruisseau à deux orientations.\\
+Dans le cas où l'on relie deux villages d'un même cycle, on forme un deuxième cycle plus petit. Au minimum deux ruisseaux sont en dehors de ce deuxième cycle donc le nombre de possibilités est au moins multiplié par 4, 2 fois par ruisseau hors du cycle.
+
+\begin{center}
+    Donc $n_0(P) = 4$ pour les graphes cycliques avec un ruisseau reliant un village extérieur au cycle.\\
+\end{center}
+
+\subsection{$n = 6$}
+Avec un ruisseau supplémentaire on multiplie dans un cas par 2 et l'autre par 4. Donc on aura soit 4, soit au moins 8. De même, deux ruisseaux reliant deux villages au sein d'un cycle formeront deux de plus donc on multipliera au minimum par 4.\\
+Essayons de rajouter deux ruisseaux hors du cycle sans qu'ils en forme un nouveau. Prenons le cas d'un graphe avec un cycle de 3 :\\
+
+\begin{center}
+    \begin{tikzpicture}
+        \tikzstyle{node}=[circle, draw, fill=white]
+        \node[node] (a) at (1,2) {} ;
+        \node[node] (b) at (0,0) {} ;
+        \node[node] (c) at (2,0) {} ;
+        \node[node] (h) at (2,2) {} ;
+        \node[node] (j) at (3,0) {} ;
+        \draw[->] (a)--(b) ;\draw[->] (b)--(c) ;\draw[->] (c)--(a);
+        \draw[->] (h)--(a); \draw[->] (j)--(c);
+        \node[node] (e) at (8,2) {} ;
+        \node[node] (f) at (7,0) {} ;
+        \node[node] (g) at (9,0) {} ;
+        \node[node] (d) at (10,0) {} ;
+        \node[node] (i) at (11,0) {} ;
+        \draw[->] (e)--(f) ;\draw[->] (f)--(g) ;\draw[->] (g)--(e) ;\draw[->] (d)--(g); \draw[->] (d)--(i);
+    \end{tikzpicture}
+\end{center}
+
+Dans chacun des cas, 4 orientations des deux ruisseaux supplémentaires sont possibles, donc on multipliera par 4 le nombre d'orientations impossibles. On aura donc 8 orientations pour lesquelles on ne peut pas attribuer d'altitudes. En ajoutant d'autres ruisseaux, on augmentera ce nombre.
+
+\begin{center}
+    Donc $n_0(P) = 6$ est impossible.\\
+\end{center}
+
+\section{Les valeurs possibles pour $n_0(P) = n$}
+Comme montrer dans la partie 2.b, l'ensemble des nombres impairs est impossible. Aussi à la partie 2.d, $n_0(P) = 6$ est impossible.\\
+
+\begin{Thm}
+    $n_0(P) = 0$ si le plan comporte 0 cycle. 
+\end{Thm}
+Ce résultat a été démontré dans la partie 2.a.\\
+\begin{Thm}
+    $n_0(P) = 2^n$, si le plan comporte un seul cycle et $n-1$ ruisseaux en dehors de ce cycle.
+\end{Thm}
+
+On remarque que lorsque l'on rajoute un ruisseau dans un plan, le nombre d'orientations possibles est multiplié au minimum par 2 comme dans l'exemple ci dessous où l'on passe de 2 à 4 orientations possibles.\\
+
+\begin{center}
+    \begin{tikzpicture}
+        \tikzstyle{node}=[circle, draw, fill=white]
+        \node[node] (a) at (2,0) {} ;
+        \node[node] (b) at (0,0) {} ;
+        \draw (a)--(b) ;
+        \draw[->][ultra thick] (4,0) -- (6,0);
+        \node[node] (c) at (8,0) {} ;
+        \node[node] (d) at (10,0) {} ;
+        \node[node] (e) at (12,0) {} ;
+        \draw (c)--(d)--(e) ;
+    \end{tikzpicture}
+\end{center}
+
+Pour chaque nouveau ruisseau ajouté en dehors d'un cycle, multiplie par deux le nombre d'orientations. Comme chaque orientation en possède une autre si on inverse toutes les flèches et que le minimum d'orientation est 2, alors dès que l'on rajoute un ruisseau le nombre possibles reste une puissance de 2.\\
+
+Regardons maintenant le cas où le plan est constitué de deux réseaux cycliques. Pour commencer regardons le cas d'un plan à 4 villages.\\
+
+\begin{center}
+    \begin{tikzpicture}
+        \tikzstyle{node}=[circle, draw, fill=white]
+        \node[node] (a) at (2,0) {} ;
+        \node[node] (b) at (0,0) {} ;
+        \node[node] (c) at (0,2) {};
+        \node[node] (d) at (2,2) {};
+        \draw (a)--(b)--(c)--(d)--(a) ;
+        \draw[->][ultra thick] (4,1) -- (6,1);
+        \node[node] (e) at (8,0) {} ;
+        \node[node] (f) at (10,0) {} ;
+        \node[node] (g) at (8,2) {} ;
+        \node[node] (h) at (10,2) {} ;
+        \draw (e)--(f)--(h)--(g)--(e) ; \draw (e)--(h);
+    \end{tikzpicture}
+\end{center}
+
+
+Pour que $n_0(P)$ soit non nul, il suffit que l'un des réseaux cycliques ait toutes les orientations de ces ruisseaux dans le même sens.\\
+Si le premier réseau a toutes ses orientations dans le même sens, l'orientation des ruisseaux du deuxième réseau n'appartenant pas au premier réseau cyclique est quelconque et on aura donc $2\times 2^2=8$ possibilités.\\
+On a exactement ici le même nombre de possibilités si on oblige le second réseau a avoir les orientations de ces ruisseaux dans le même sens.\\
+On a cependant compté deux fois les cas où les deux réseaux ont toutes les deux des orientations de ruisseaux dans le même sens soit 2 possibilités ici car l'orientation unique des ruisseaux du premier cycle impose l'orientation unique des ruisseaux du second cycle.\\
+On a donc 8+8-2=14 possibilités pour $n_0(P)$.\\
+\\
+Ce résultat se généralise par le résultat suivant:
+\begin{Thm}
+    Si le village est constitué de $r$ ruisseaux en tout dont $r_0$ ruisseaux non cycliques et 2 réseaux cycliques de $r_1$ et $r_2$ ruisseaux,on a $n_0(P)=2^{r_0}\times2\times(2^{r-r_1-r_0}+2^{r-r_2-r_0}-2-(r_1+r_2+r_0-r))$
+\end{Thm}
+Remarque: $r-r_1$ permet de tenir compte également du cas où on aurait 2 cycles ayant un sommet en commun et plus un ruisseau.\\
+
+$2-(r_1+r_2+r_0-r)$ permet de différencier les cas où les deux cycles ont 0 ou un ruisseau en commun.\\
+Exemple: Si Un plan est composé d'un cycle composé d'un carré de 4 villages (donc 3 ruisseaux), d'un cycle composé d'un triangle de 3 villages (donc 2 ruisseaux), ces deux cycles ayant un ruisseau commun, et pour lequel on a en plus 5 ruisseaux en ligne accrochés à un des villages\\
+On a donc $n_0(P) = 2^{5}\times(2\times( 2^{3}+2^{2})-2) = 704$.\\
+Si le plan est composé d'un cycle composé d'un carré de 4 villages (donc 3 ruisseaux), d'un cycle composé d'un triangle de 3 villages (donc 2 ruisseaux), ces deux cycles ayant un village (sommet), et pour lequel on a en plus 5 ruisseaux en ligne accrochés à un des villages\\
+On a donc $n_0(P) = 2^{5}\times(2\times( 2^{4}+2^{3})-4) = 1408$.\\
+ 
+Ce résultat peut donner lieu à un résultat plus général si on considère que le plan possède en tout $r$ ruisseaux dont $r_0$ ruisseaux non cycliques et $n$ réseaux cycliques composés chacun de $r_1$,$r_2$,...,$r_n$ ruisseaux avec une formule similaire à la précédente où chaque double orientation d'un cycle peut être associé à des orientations quelconques des autres cycles. On effectue alors la somme de toutes les possibilités en oubliant pas d'enlever toutes les possibilités ou on a plus d'un réseau orienté dans le même sens (qui se détermine avec une formule identique à celle du crible en probabilité).
+
+\section{$n_1(P)$ sur des exemples}
+$n_1(P)$ est le nombre d'orientations tels qu'il existe une seule attribution d'altitudes.\\
+
+\subsection{$1^{er}$ cas : le plan cyclique, $C_v$}
+
+\begin{Thm}
+    $n_1(C_v) = 2v$
+\end{Thm}
+
+Les plans cycliques où tous les ruisseaux sont orientés dans le même sens n'ont aucune attribution d'altitude.\\
+Regardons un plan dans lequel tous les ruisseaux sont orientés dans le même sens sauf 1. Une seule attribution est possible comme on le voit dans l'exemple ci-dessous.\\
+
+\begin{center}
+    \begin{tikzpicture}
+        \tikzstyle{node}=[circle, draw, fill=white]
+        \node[node] (a) at (2,0) {6} ;
+        \node[node] (b) at (0,0) {5} ;
+        \node[node] (c) at (0,2) {3} ;
+        \node[node] (d) at (2,2) {2} ;
+        \node[node] (e) at (-1,1) {4} ;
+        \node[node] (f) at (3,1) {1} ;
+        \draw[->] (a)--(b) ; \draw[->] (b)--(e); 
+        \draw[->] (e)--(c); \draw[->] (c)--(d);
+        \draw[->] (d)--(f); \draw[->,red] (a)--(f);
+    \end{tikzpicture}
+\end{center}
+
+Chaque sommet du plan cyclique a les mêmes caractéristiques que les autres sommets (adjacent à deux sommets exactement)  et on peut donc faire le même type de plan qu'au dessus sur les autres sommets. Le nombre de possibilités telles qu'on peut attribuer une seule altitude dans un plan $C_6$ est donc le nombre de villages multipliés par deux car chaque sommet possède deux sommets adjacents. Donc, pour cet exemple, $n_1(C_6) = 2 \times 6 = 12$.\\
+
+Prenons le cas où 2 ruisseaux ou plus sont dans le sens contraire du cycle initial. Dans les deux exemples ci-dessous, comme on peut le voir, plus d'une orientation est possible du fait que l'on puisse inverser 2 hauteurs de villages.\\
+
+\begin{center}
+    \begin{tikzpicture}
+        \tikzstyle{node}=[circle, draw, fill=white]
+        \node[node] (a) at (2,0) {} ;
+        \node[node] (b) at (0,0) {2} ;
+        \node[node] (c) at (0,2) {} ;
+        \node[node] (d) at (2,2) {} ;
+        \node[node] (e) at (-1,1) {} ;
+        \node[node] (f) at (3,1) {1} ;
+        \draw[->] (a)--(b) ; \draw[->] (b)--(e); 
+        \draw[->] (e)--(c); \draw[->] (c)--(d);
+        \draw[->,red] (f)--(d); \draw[->,red] (a)--(f);
+
+        \node[node] (a) at (8,0) {} ;
+        \node[node] (b) at (6,0) {} ;
+        \node[node] (c) at (6,2) {} ;
+        \node[node] (d) at (8,2) {} ;
+        \node[node] (e) at (5,1) {3} ;
+        \node[node] (f) at (9,1) {4} ;
+        \draw[->] (a)--(b) ; \draw[->] (b)--(e); 
+        \draw[->,red] (c)--(e); \draw[->] (c)--(d);
+        \draw[->] (d)--(f); \draw[->,red] (a)--(f);
+    \end{tikzpicture}
+\end{center}
+
+Si deux ruisseaux contraires au sens du cycle sont consécutifs alors les hauteurs des villages 1 et 2 peuvent être inversé donc il y aura plus d'une attribution d'altitudes.\\
+Si deux ruisseaux sont contraires au sens du cycle même s'ils ne sont pas adjacents, on peut inverser dans l'exemple les hauteurs des points 3 et 4. Donc il y a également plus d'une attribution d'altitudes possibles.\\
+
+Dans un plan cyclique quelconque, la stratégie sera la première qui est de mettre le minimum et le maximum sur deux sommets adjacents et d'orienter les flèches de sorte à ce qu'elles pointent toutes vers le minimum. Chaque sommet a deux sommets adjacents et on peut utiliser la stratégie sur chacun des villages.
+\begin{center}
+    Donc $n_1(C_v) = 2v$, où $v$ est le nombre de village.\\
+\end{center}
+
+\subsection{$2^{ème}$ cas : le plan quadrillage, $Q_v$}
+
+\begin{Thm}
+    $n_1(Q_v)\geq 2v $
+\end{Thm}
+
+Avant tout, $Q_v$ est un plan constitué de 2 lignes (ruisseaux horizontaux) de villages avec le même nombre de villages. Comme le plan quadrillage est constitué de 2 lignes identiques, le nombre de villages est donc forcément pair.  Chaque village d'une ligne est relié à un village de la deuxième ligne (ruisseaux verticaux). Voici un exemple avec 8 villages ci-dessous.
+
+\begin{center}
+    \begin{tikzpicture}
+        \tikzstyle{node}=[circle, draw, fill=white]
+        \node[node] (a) at (0,0) {} ;
+        \node[node] (b) at (2,0) {} ;
+        \node[node] (c) at (4,0) {} ;
+        \node[node] (d) at (0,2) {} ;
+        \node[node] (e) at (2,2) {} ;
+        \node[node] (f) at (4,2) {} ;
+        \node[node] (g) at (6,0) {} ;
+        \node[node] (h) at (6,2) {} ;
+        \draw[red] (a)--(b)--(c)--(g)--(h)--(f)--(e)--(d)--(a);
+        \draw (b)--(e); \draw (c)--(f);
+    \end{tikzpicture}
+\end{center}
+
+On remarque que l'on peut faire des cycles dans cette figure, soit sur les ruisseaux extérieurs ou alors avec un ou plusieurs ruisseaux intérieur. On peut donc dire que le plan quadrillage va posséder au minimum $2v$ orientations tels que l'on peut faire une unique attribution d'altitudes : $n_1(Q_v) \geq 2v$ avec $v$ villages.\\
+
+Pour l'étude de ce cas on va considérer le cycle extérieur comme les ruisseaux aux extrémités de la figure, ceux qui sont rouges, et les ruisseaux intérieurs, ceux qui ne forment pas le cycle, les ruisseaux noirs.\\
+Prenons le maximum sur un angle, le point rouge, et le minimum sur un sommet adjacent, en-dessous de la flèche rouge. Comme on le voit ci-dessous, une unique attribution est possible. De même lorsque l'on prend le maximum sur un sommet qui n'est pas un angle. Pour l'attribution d'altitude, on fait d'abord en fonction des ruisseaux extérieurs et on regarde si l'orientation des ruisseaux intérieurs convient.\\
+
+\begin{center}
+    \begin{tikzpicture}
+        \tikzstyle{node}=[circle, draw, fill=white]
+        \node[node] (a) at (0,0) {1} ;
+        \node[node] (b) at (2,0) {2} ;
+        \node[node] (c) at (4,0) {3} ;
+        \node[node,fill=red] (d) at (0,2) {6} ;
+        \node[node] (e) at (2,2) {5} ;
+        \node[node] (f) at (4,2) {4} ;
+        \draw[->] (b)--(a); \draw[->] (d)--(e); \draw[->] (c)--(b);
+        \draw[->,red] (d)--(a); \draw[->] (e)--(b); 
+        \draw[->] (f)--(c); \draw[->] (e)--(f);
+
+        \tikzstyle{node}=[circle, draw, fill=white]
+        \node[node] (a) at (7,0) {2} ;
+        \node[node] (b) at (9,0) {3} ;
+        \node[node] (c) at (11,0) {4} ;
+        \node[node] (d) at (7,2) {1} ;
+        \node[node,fill=red] (e) at (9,2) {6} ;
+        \node[node] (f) at (11,2) {5} ;
+        \draw[->] (b)--(a); \draw[->,red] (e)--(d); \draw[->] (c)--(b);
+        \draw[->] (a)--(d); \draw[->] (e)--(b); 
+        \draw[->] (f)--(c); \draw[->] (e)--(f);
+    \end{tikzpicture}
+\end{center}
+
+Dans le cas où un ruisseau intérieur est contraire au sens du cycle des ruisseaux extérieurs ou si deux ruisseaux ne sont pas dans le sens du cycle extérieur alors on peut respectivement pas attribuer d'altitudes et attribuer plus d'une altitude.\\
+
+\begin{center}
+    \begin{tikzpicture}
+        \tikzstyle{node}=[circle, draw, fill=white]
+        \node[node] (a) at (0,0) {1} ;
+        \node[node] (b) at (2,0) {2} ;
+        \node[node] (c) at (4,0) {3} ;
+        \node[node,fill=red] (d) at (0,2) {6} ;
+        \node[node] (e) at (2,2) {5} ;
+        \node[node] (f) at (4,2) {4} ;
+        \draw[->] (b)--(a); \draw[->] (d)--(e); \draw[->] (c)--(b);
+        \draw[->,red] (d)--(a); \draw[->] (e)--(b); 
+        \draw[->] (f)--(c); \draw[->] (e)--(f);
+
+        \tikzstyle{node}=[circle, draw, fill=white]
+        \node[node] (a) at (7,0) {2} ;
+        \node[node] (b) at (9,0) {3} ;
+        \node[node] (c) at (11,0) {4} ;
+        \node[node] (d) at (7,2) {1} ;
+        \node[node,fill=red] (e) at (9,2) {6} ;
+        \node[node] (f) at (11,2) {5} ;
+        \draw[->] (b)--(a); \draw[->,red] (e)--(d); \draw[->] (c)--(b);
+        \draw[->] (a)--(d); \draw[->] (e)--(b); 
+        \draw[->] (f)--(c); \draw[->] (e)--(f);
+    \end{tikzpicture}
+\end{center}
+
+Lorsque le maximum n'est pas sur un angle, le minimum ne peut pas être sur le deuxième plan ligne car cela ferait que l'on séparerait la figure en deux parties dans lesquelles les orientations peuvent changer donc ce cas est impossible. Comme le montre l'exemple en dessous où il y a 2 attributions qui fonctionnent.\\
+
+\begin{center}
+    \begin{tikzpicture}
+        \tikzstyle{node}=[circle, draw, fill=white]
+        \node[node] (a) at (0,0) {2} ;
+        \node[node] (b) at (2,0) {1} ;
+        \node[node] (c) at (4,0) {4} ;
+        \node[node] (d) at (0,2) {3} ;
+        \node[node, fill=red] (e) at (2,2) {6} ;
+        \node[node] (f) at (4,2) {5} ;
+        \draw[->] (a)--(b); \draw[->] (e)--(d); \draw[->] (c)--(b);
+        \draw[->] (d)--(a); \draw[->,red] (e)--(b); 
+        \draw[->] (f)--(c); \draw[->] (e)--(f);
+
+        \tikzstyle{node}=[circle, draw, fill=white]
+        \node[node] (a) at (7,0) {3} ;
+        \node[node] (b) at (9,0) {1} ;
+        \node[node] (c) at (11,0) {2} ;
+        \node[node] (d) at (7,2) {5} ;
+        \node[node, fill=red] (e) at (9,2) {6} ;
+        \node[node] (f) at (11,2) {4} ;
+        \draw[->] (a)--(b); \draw[->] (e)--(d); \draw[->] (c)--(b);
+        \draw[->] (d)--(a); \draw[->,red] (e)--(b); 
+        \draw[->] (f)--(c); \draw[->] (e)--(f);
+    \end{tikzpicture}
+\end{center}
+
+On va donc ramener le cas du plan quadrillage au cas du plan ligne où tous les ruisseaux intérieurs vont simplement suivre le sens du cycle extérieur.\\
+Comme montrer dans la section 4.a, les plans cycles admettent $n_1(C_v) = 2v$, avec $v$ le nombre de villages.\\
+
+Si on a les deux lignes dans le même sens et que les ruisseaux reliants les deux lignes sont orienté de manières alterné on peut donc rajouter 4 cas qui partent chacun d'un des angles. Dans l'exemple ci-dessous on a une unique attribution d'altitude.\\
+
+\begin{center}
+    \begin{tikzpicture}
+        \tikzstyle{node}=[circle, draw, fill=white]
+        \node[node] (a) at (0,0) {6} ;
+        \node[node] (b) at (2,0) {5} ;
+        \node[node] (c) at (4,0) {4} ;
+        \node[node] (d) at (0,2) {3} ;
+        \node[node] (e) at (2,2) {2} ;
+        \node[node] (f) at (4,2) {1} ;
+        \draw[->] (a)--(b); \draw[->] (d)--(e); \draw[->] (b)--(c);
+        \draw[->] (a)--(d); \draw[->] (e)--(b); 
+        \draw[->] (c)--(f); \draw[->] (e)--(f);
+    \end{tikzpicture}
+\end{center}
+
+Si l'on regarde sur un cas plus grand et qu'on met le maximum sur un sommet qui n'est pas un angle alors on va créer un cycle. On sera donc dans le cas $n_0(P)$ car on ne pourra pas attribuer d'altitude.\\
+
+\begin{center}
+    On a donc ici $n_1(Q_v) = 2v + 4$, avec $v$ villages.
+\end{center}
+Pour des quadrillages de plus grande longueur on pourra augmenter encore plus le nombre de choix par rapport aux réseaux cycliques, chaque augmentation ayant  deux possibilités d'orientation, le nombre total restera pair.
+\section{Valeurs possibles de $n$ tel que $n_1(P) = n$}
+
+\begin{Thm}
+    $n_1(P) = 1$ pour $P_1$, $n_1(P) = 2$ pour $L_v$ ou $n_1(P) = 2q$ avec $q \geq 3$.
+\end{Thm}
+
+Regardons le cas d'un plan avec un unique village, comme il n'y a pas de ruisseau, une unique attribution est possible. Donc $n_1(P_1) = 1$ avec $P_1$ un plan avec un unique village.\\
+Grâce à la section 4, on peut dire que $2v \in n_1(P)$ après l'étude des cas du plan cycle et du plan quadrillage.\\
+
+\textbf{Montrons que l'ensemble des impairs supérieurs à 1 est impossible.}\\
+
+Considérons $k$ orientations possibles avec $k$ un nombre impair.\\
+Pour chaque orientation qui permet une unique attribution d'altitudes, en inversant tout les ruisseaux, on conserve l'unique attribution possible on aura donc une seconde orientation permettant d'avoir une unique attribution, illustré par l'exemple ci-dessous.\\
+
+\begin{center}
+    \begin{tikzpicture}
+        \tikzstyle{node}=[circle, draw, fill=white]
+        \node[node] (a) at (2,0) {} ;
+        \node[node] (b) at (0,0) {} ;
+        \node[node] (c) at (0,2) {};
+        \node[node] (d) at (2,2) {};
+        \draw[->] (a)--(b); \draw[->] (b)--(c);
+        \draw[->] (c)--(d); \draw[->] (a)--(d);
+        
+        \draw[->][ultra thick] (4,1) -- (6,1);
+        \node[node] (e) at (8,0) {} ;
+        \node[node] (f) at (10,0) {} ;
+        \node[node] (g) at (8,2) {} ;
+        \node[node] (h) at (10,2) {} ;
+        \draw[->] (h)--(f); \draw[->] (e)--(f);
+        \draw[->] (h)--(g); \draw[->] (g)--(e);
+    \end{tikzpicture}
+\end{center}
+Comme chaque ruisseau possède deux orientations, le nombre d'attributions d'altitudes sera donc pair sauf dans le cas où le plan ne contient qu'un unique village.\\
+\textbf{Montrons $n_1(P) = 2$ possible et $n_1(P) = 4$ impossible.}\\
+Dans un plan ligne, si tout les ruisseaux sont dans le même sens alors on a une unique attribution d'altitudes. Également si l'on inverse tout les ruisseaux on aura une deuxième orientation qui vérifie $n_1(P)$.\\
+Dans l'exemple ci-dessous, on remarque que si deux ruisseaux ou plus ne sont pas dans le même sens alors il y aura plus d'une seule attribution d'altitudes.\\
+\begin{center}
+    \begin{tikzpicture}
+        \tikzstyle{node}=[circle, draw, fill=white]
+        \node[node] (a) at (0,0) {2} ;
+        \node[node] (b) at (2,0) {1} ;
+        \node[node] (c) at (4,0) {3};
+        \draw[->] (a)--(b); \draw[->] (c)--(b);
+        
+        \node[node] (e) at (7,0) {3} ;
+        \node[node] (f) at (9,0) {1} ;
+        \node[node] (g) at (11,0) {2} ;
+        \draw[->] (e)--(f); \draw[->] (g)--(f);
+    \end{tikzpicture}
+\end{center}
+
+On a donc $n_1(P) = 2$ pour les plans lignes.\\
+Grâce à l'étude du plan ligne, on remarque qu'ajouter un ruisseau et/ou changer le sens de celui-ci ne permet pas de faire $n_1(P) = 4$.\\
+
+Si l'on ajoute deux ruisseaux partant du même village à un plan ligne, on se ramène dans le cas où l'on a un cycle. Donc $n_1(P) = 2v$ et le minimum de ce calcul est 6, le plus petit cycle étant celui composé de 3 villages. Donc $n_1(P) = 4$ est impossible.
+
+\begin{center}
+    Donc $n_1(P) = 1$ pour $P_1$, $n_1(P) = 2$ pour $L_v$ ou $n_1(P) = 2q$ avec $q \geq 3$.\\
+\end{center}
+
+\section{Couple $n_k(P) = n$ pour des exemples}
+
+Pour un village possédant $v$ villages, le nombre d'orientations possibles est égale à $2^r$. On a donc $\sum_{k=0}^\infty n_k(P) = 2^r$. Or $k$, le nombre d'attributions, est inférieur ou égal à $v!$ car $n_k(P) = 0$ pour $k>v!$. On peut donc écrire $\sum_{k=0}^{v!} n_k(P) = 2^r$.\\
+
+De même pour le nombre d'attributions d'altitude étant $\sum_{k=0}^\infty kn_k(P) = v!$ peut être réécrite avec $\sum_{k=0}^{v!} kn_k(P) = v!$.\\
+
+\subsection{Cas du plan complet $K_v$}
+
+\begin{Thm}
+    Pour $K_v$, avec $v$ villages, $n_0(K_v) = 2^r - n_1(K_v)$ pour $r = \frac{v(v-1)}{2}$, $n_1(K_v) = v!$ et $n_k(K_v) = 0$ pour $k \geq 2$.
+\end{Thm}
+
+Le plan complet est composé de $\frac{v(v-1)}{2}$ ruisseaux avec $v$ le nombre de villages. Nous allons commencer par regarder le cas du complet à 5 villages $K_5$.
+
+\begin{center}
+    \begin{tikzpicture}
+        \tikzstyle{node}=[circle, draw, fill=white]
+        \node[node] (a) at (3,3) {};
+        \node[node] (b) at (1,2) {};
+        \node[node] (c) at (5,2) {};
+        \node[node] (d) at (2,0) {};
+        \node[node] (e) at (4,0) {};
+        \draw (a)--(b)--(c)--(d)--(e)--(c)--(a)--(d)--(b)--(e)--(a);
+    \end{tikzpicture}
+\end{center}
+
+Dans le cas où il y a un cycle dans la figure, de 3,4 ou 5 villages, on est dans le cas $n_0(P)$ car aucune attribution n'est possible.\\
+Sinon on sera toujours dans le cas $n_1(P)$ car du fait que le graphe soit complet, en inversant un ou plusieurs ruisseaux d'un cycle de 5, il y aura toujours qu'une unique attribution, les cas ci-dessous permettent de l'illustrer. Comme on le voit, si un ou plusieurs ruisseaux sont inversés à cause des ruisseaux intérieurs qui suivent le sens du cycle extérieur on a qu'une seule attribution possible.
+
+\begin{center}
+    \begin{tikzpicture}
+        \tikzstyle{node}=[circle, draw, fill=white]
+        \node[node] (a) at (3,3) {5};
+        \node[node] (b) at (1,2) {1};
+        \node[node] (c) at (5,2) {4};
+        \node[node] (d) at (2,0) {2};
+        \node[node] (e) at (4,0) {3};
+        \draw[->,red] (a)--(b); \draw[->] (c)--(b); \draw[->] (c)--(d); 
+        \draw[->] (e)--(d); \draw[->] (c)--(e); \draw[->] (a)--(c);
+        \draw[->] (a)--(d); \draw[->] (d)--(b); \draw[->] (e)--(b);
+        \draw[->] (a)--(e);
+
+        \node[node] (a) at (9,3) {5};
+        \node[node] (b) at (7,2) {2};
+        \node[node] (c) at (11,2) {4};
+        \node[node] (d) at (8,0) {1};
+        \node[node] (e) at (10,0) {3};
+        \draw[->,red] (a)--(b); \draw[->] (c)--(b); \draw[->] (c)--(d); 
+        \draw[->] (e)--(d); \draw[->] (c)--(e); \draw[->] (a)--(c);
+        \draw[->] (a)--(d); \draw[->,red] (b)--(d); \draw[->] (e)--(b);
+        \draw[->] (a)--(e);
+    \end{tikzpicture}
+\end{center}
+
+Donc le plan complet $K_5$ possède $2^{10} = 1024$ orientations possibles compris entre $n_0(P)$ et $n_1(P)$ car soit on ne peut pas attribuer d'altitudes à cause des cycles et on ne peut pas avoir plus d'une attribution possible.\\
+Pour compter le nombre d'attribution de $n_1(P)$, on choisit un maximum puis le sommet suivant et ainsi de suite, on a donc $5\times4\times...\times1 = 5! = 120$. Et comme le nombre d'orientation est de 1024 alors $n_0(P) = 1024 - n_1(P)$. Donc pour $K_5$, $n_0(K_5) = 1024 - 120 = 904$, $n_1(K_5) = 120$ et $n_k(K_5) = 0$ pour $k \geq 2$.\\
+
+Si on généralise l'exemple sur des cas plus grands, lorsque l'on n'a pas de cycle, on va choisir un maximum et ensuite le sommet suivant. On aura donc $v!$ possibilités d'orientations appartenant à $n_1(K_v)$ où $v$ est le nombre de villages du plan complet.\\
+Dans cette situation, un cas où 2 attributions d'altitudes seraient possibles n'existe pas, donc $n_k(K_v) = 0$ pour $k \geq 2$.
+
+\begin{center}
+    On aura donc pour $K_v$, avec $v$ villages :\\
+    $n_0(K_v) = 2^r - n_1(K_v)$ pour $r = \frac{v(v-1)}{2}$,\\
+    $n_1(K_v) = v!$,\\
+    $n_k(K_v) = 0$ pour $k \geq 2$.\\
+\end{center}
+
+\subsection{Cas du plan étoile $E_v$}
+
+Étude d'un exemple avec $v=6$  donc $r=5$.
+\begin{center}
+    \includegraphics[width=10cm]{planetoile2.png}\\
+\end{center}
+
+Toutes les possibilités sont deux à deux identiques ( orientations intérieures ou extérieures). On a donc:
+\begin{center}
+    $k=0!\times 5! = 120$ et $n_k(P)=2$,\\
+    $k=1!\times 4! = 24$ et $n_k(P)=10$,\\
+    $k=2!\times 3! = 12$ et $n_k(P)=20$.\\
+\end{center}
+
+\textbf{Pour les autres valeurs de $k$ on a $n_k(P)=0$.}\\
+Afin de généraliser, il faut distinguer les cas où $v$ est pair donc $r$ est impair comme le cas ci-dessus où les possibilités se regroupent 2 à 2 et les cas où $v$ est impair donc $r$ est pair où les possibilités se regroupent 2 à 2 sauf le cas central où ne multipliera pas par 2 pour obtenir $n_k(P)$.\\
+
+\underline{Cas 1:} $v$ pair\\
+Pour $i$ de 0 à $\frac{v-2}{2}$,$k=i!\times (v-1-i)!$ et $n_k(P)$=$2\times {v-1 \choose i} $.\\
+
+\underline{Cas 2:} $v$ impair\\
+Pour $i$ de 0 à $\frac{v-3}{2}$,$k=i!\times (v-1-i)!$ et $n_k(P)$=$2\times {v-1 \choose i} $,\\
+Pour $i$ = $\frac{v-1}{2}$,$k=i!\times (v-1-i)!$ et $n_k(P)$=$ {v-1 \choose i} $.\\
+
+Pour les autres valeurs de $k$ on a $n_k(P)=0$.
+
+\subsection{Cas du plan ligne $L_v$}
+
+Pour simplifier l'écriture, nous écrirons $L_v = n_0(P), n_1(P),...,n_k(P)$, sans mentionner le $k$.\\
+
+Commençons par regarder des exemples.\\
+Dans le cas du plan $L_2$, on aura un unique ruisseau donc 2 orientations possibles et une seule attribution d'altitudes. Donc pour $L_2 = 0,1$.\\
+
+Passons au cas du plan $L_3$, on a 4 orientations différentes. Dans les deux premiers cas, on a une seule attribution et dans les deux autres on en aura deux.
+
+\begin{center}
+    \begin{tikzpicture}
+        \tikzstyle{node}=[circle, draw, fill=white]
+        \node[node] (a) at (0,0) {3};
+        \node[node] (b) at (2,0) {2};
+        \node[node] (c) at (4,0) {1};
+        \draw[->] (a)--(b); \draw[->] (b)--(c);
+        
+        \node[node] (a) at (7,0) {1};
+        \node[node] (b) at (9,0) {2};
+        \node[node] (c) at (11,0) {3};
+        \draw[<-] (a)--(b); \draw[<-] (b)--(c);
+
+        \node[node] (a) at (0,-2) {2/3};
+        \node[node] (b) at (2,-2) {1};
+        \node[node] (c) at (4,-2) {2/3};
+        \draw[->] (a)--(b); \draw[<-] (b)--(c);
+
+        \node[node] (a) at (7,-2) {1/2};
+        \node[node] (b) at (9,-2) {3};
+        \node[node] (c) at (11,-2) {1/2};
+        \draw[<-] (a)--(b); \draw[->] (b)--(c);
+    \end{tikzpicture}
+\end{center}
+
+On a donc $L_3 = 0,2,2$.\\
+
+Pour les plans $L_4$ et $L_5$, on les as étudié mais on mettra seulement les résultats trouvés.\\
+On aura donc $L_4 = 0,2,0,4,0,2$ et $L_5 = 0,2,0,0,4,0,2,0,0,4,0,2,0,0,0,0,2$.\\
+
+On peut conjecturer que les $n$ des couples $(k,n)$ seront toujours pair, cela est dû au fait que les ruisseaux possèdent 2 orientations.
+
+\section{Caractérisation des couples $(k,n)$ tel que $n_k(P) = n$}
+
+Comme on le voit dans le sujet, on peut se demander si $n$ est toujours pair sauf lorsque l'on a un plan avec un unique village qui donnera $n_1(P) = 1$.\\
+
+Piste de recherche:\\
+Montrer que pour tout $k$, il existe un $n$ qui est toujours pair sauf pour $P_1$. On peut utiliser le fait qu'un ruisseau possède 2 orientations et qu'il existe toujours une seconde orientation lorsque l'on inverse le sens de toutes les flèches du graphe orienté.
+
+\end{document}
+
